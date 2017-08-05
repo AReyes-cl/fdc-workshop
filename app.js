@@ -44,3 +44,39 @@ dialog.matches("None", (session) => {
 });
 
 
+
+dialog.matches("mostrar-obras", (session) => {
+    session.sendTyping();
+
+    let cards = [];
+
+    let warholUrl = "http://curame-bot.azurewebsites.net/events/centro-cultural-la-moneda-andy-warhol/main.png";
+
+    let card = new builder.ThumbnailCard(session)
+                    .title("Andy Warhol")
+                    .subtitle("Litografía #1")
+                    .text("Lorem ipsum bla blabla")
+                    .images([
+                        builder.CardImage.create(session, warholUrl)
+                    ])
+                    .tap(builder.CardAction.openUrl(session, "http://www.ccplm.cl/sitio/andy-warhol"));
+    cards.push(card);
+
+    let yokoUrl = "http://curame-bot.azurewebsites.net/events/corpartes-yoko-ono-dream/main.png";
+    let card2 = new builder.ThumbnailCard(session)
+                    .title("Yoko Ono")
+                    .subtitle("Dream come true")
+                    .images([
+                        builder.CardImage.create(session, yokoUrl)
+                    ])
+                    .tap(builder.CardAction.openUrl(session, "http://www.corpartes.cl/evento/yoko-ono-dream-come-true/"));
+    cards.push(card2);
+
+    let message = new builder.Message(session)
+        .attachmentLayout(builder.AttachmentLayout.carousel)
+        .attachments(cards);
+    session.send(message);
+
+});
+
+
