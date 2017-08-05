@@ -22,33 +22,25 @@ var connector = new builder.ChatConnector({
 // Listen for messages from users 
 server.post('/api/messages', connector.listen());
 
+var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL);
 // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector);
 
-bot.dialog("/", [(session, args, next) => {
-        session.sendTyping();
-        
-        if (!session.userData.esperandoRespuesta) {
-            session.send("Hola %s!", session.message.user.name);
-            session.send("Dime la clave secreta...");
-            session.userData.esperandoRespuesta = true;
-        }
-        else {
-            next();
-        }
-    },
-    (session, results) => {
-        session.sendTyping();
-        if (session.message.text == "1234") {
-            session.send("la clave es correcta!");
-        }
-        else {
-            session.send("la clave es incorrecta");
-        }
-        session.userData.esperandoRespuesta = false;
-    }
-]);
+const dialog = new builder.IntentDialog({ 
+    recognizers: [recognizer],
+    recognizeOrder: builder.RecognizeOrder.parallel
+});
 
+bot.dialog('/', dialog);
 
+dialog.matches("saludo", (session) => {
+    session.sendTyping();
+    session.send("😃 Hola %s!", session.message.user.name);
+});
+
+dialog.matches("None", (session) => {
+    session.sendTyping();
+    session.send("🤔 Creo que no entendí lo que me quieres decir...", session.message.user.name);
+});
 
 

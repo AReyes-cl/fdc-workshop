@@ -8,7 +8,12 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceRoot}\\app.js"
+            "program": "${workspaceRoot}\\app.js",
+            "env": {
+                "MICROSOFT_APP_ID": "e81e07c2-79dd-4879-a32b-d6aa5c76db9f",
+                "MICROSOFT_APP_PASSWORD": "y8N7jw0nnawbnTyeKdcCmP8",
+                "LUIS_MODEL": "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/63dea16e-bd0b-43c1-973b-ac5efb16f796?subscription-key=2ccb25ef125941c399224a9affe69f78&verbose=true&timezoneOffset=0&q="
+            }
         }
     ]
 }
