@@ -45,38 +45,65 @@ dialog.matches("None", (session) => {
 
 
 
-dialog.matches("mostrar-obras", (session) => {
+dialog.matches("mostrar-obras", (session, args) => {
     session.sendTyping();
 
     let cards = [];
 
-    let warholUrl = "http://curame-bot.azurewebsites.net/events/centro-cultural-la-moneda-andy-warhol/main.png";
+    cards.push(buildCard(session,
+                            "http://curame-bot.azurewebsites.net/events/centro-cultural-la-moneda-andy-warhol/main.png",
+                            "http://www.ccplm.cl/sitio/andy-warhol",
+                            "Andy Warhol",
+                            "Litografía #1",
+                            "Lorem ipsum bla bla bla"
+                        ));
 
-    let card = new builder.ThumbnailCard(session)
-                    .title("Andy Warhol")
-                    .subtitle("Litografía #1")
-                    .text("Lorem ipsum bla blabla")
-                    .images([
-                        builder.CardImage.create(session, warholUrl)
-                    ])
-                    .tap(builder.CardAction.openUrl(session, "http://www.ccplm.cl/sitio/andy-warhol"));
-    cards.push(card);
+    cards.push(buildCard(session,
+                            "http://curame-bot.azurewebsites.net/events/corpartes-yoko-ono-dream/main.png",
+                            "http://www.corpartes.cl/evento/yoko-ono-dream-come-true/",
+                            "Yoko Ono",
+                            "Dream come true",
+                            "Lorem ipsum bla bla bla"
+                        ));
 
-    let yokoUrl = "http://curame-bot.azurewebsites.net/events/corpartes-yoko-ono-dream/main.png";
-    let card2 = new builder.ThumbnailCard(session)
-                    .title("Yoko Ono")
-                    .subtitle("Dream come true")
-                    .images([
-                        builder.CardImage.create(session, yokoUrl)
-                    ])
-                    .tap(builder.CardAction.openUrl(session, "http://www.corpartes.cl/evento/yoko-ono-dream-come-true/"));
-    cards.push(card2);
+
+    let artistEntity = builder.EntityRecognizer.findEntity(args.entities, 'Artist');
 
     let message = new builder.Message(session)
         .attachmentLayout(builder.AttachmentLayout.carousel)
-        .attachments(cards);
-    session.send(message);
+
+    if (artistEntity) {
+        switch(artistEntity.entity.trim().toLowerCase()) {
+            case "andy warhol": {
+                message.addAttachment(cards[0]);
+                session.send(message);
+                break;
+            }
+            case "yoko ono": {
+                message.addAttachment(cards[1]);
+                session.send(message);
+                break;
+            }
+            default: {
+                session.send("No tengo información acerca de " + artistEntity.entity);
+                break;
+            }
+        };
+    }
+    else {
+        message.attachments(cards);
+        session.send(message);
+    } 
 
 });
 
-
+let buildCard = (session, imageUrl, pageUrl, title, subtitle, text) => {
+    return new builder.ThumbnailCard(session)
+                    .title(title)
+                    .subtitle(subtitle)
+                    .text(text)
+                    .images([
+                        builder.CardImage.create(session, imageUrl)
+                    ])
+                    .tap(builder.CardAction.openUrl(session, pageUrl));
+};
