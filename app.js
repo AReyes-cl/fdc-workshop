@@ -25,10 +25,29 @@ server.post('/api/messages', connector.listen());
 // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector);
 
-bot.dialog("/", (session) => {
+bot.dialog("/", [(session, args, next) => {
         session.sendTyping();
-        session.send("Hola mundo!");
-    });
+        
+        if (!session.userData.esperandoRespuesta) {
+            session.send("Hola %s!", session.message.user.name);
+            session.send("Dime la clave secreta...");
+            session.userData.esperandoRespuesta = true;
+        }
+        else {
+            next();
+        }
+    },
+    (session, results) => {
+        session.sendTyping();
+        if (session.message.text == "1234") {
+            session.send("la clave es correcta!");
+        }
+        else {
+            session.send("la clave es incorrecta");
+        }
+        session.userData.esperandoRespuesta = false;
+    }
+]);
 
 
 
